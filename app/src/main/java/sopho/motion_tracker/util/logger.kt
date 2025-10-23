@@ -41,7 +41,6 @@ interface AbstractLogger {
         val stack = Throwable().stackTrace
         for (element in stack) {
             val className = element.className
-            // 跳过 Logger 接口和实现自身
             if (!className.contains("AbstractLogger") && !className.contains("Logger")) {
                 return className.substringAfterLast('.')
             }
@@ -53,9 +52,8 @@ interface AbstractLogger {
         val stack = Throwable().stackTrace
         for (element in stack) {
             val className = element.className
-            // 跳过 Logger 接口和实现自身
             if (!className.contains("AbstractLogger") && !className.contains("Logger")) {
-                return "[Sopho][${element.methodName}(${element.fileName}:${element.lineNumber})]"
+                return "[${element.methodName}(${element.fileName}:${element.lineNumber})]"
             }
         }
         return ""
@@ -68,9 +66,15 @@ object StdLogger : AbstractLogger {
         tag: String,
         message: String
     ) {
-        Log.println(level, tag, message);
+        Log.println(level, tag, "[Sopho]$message")
     }
 
+}
+
+object FileLogger : AbstractLogger {
+    override fun log(level: Int, tag: String, message: String) {
+
+    }
 }
 
 object SLog : AbstractLogger {
@@ -95,7 +99,6 @@ object SLog : AbstractLogger {
         }
     }
 
-    // 默认至少有一个实现，保证开箱即用
     init {
         addLogger(StdLogger)
     }
