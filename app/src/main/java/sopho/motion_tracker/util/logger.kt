@@ -1,6 +1,11 @@
 package sopho.motion_tracker.util
 
+import android.content.Context
 import android.util.Log
+import java.io.BufferedWriter
+import java.io.File
+import java.io.FileWriter
+import java.io.IOException
 import java.util.concurrent.CopyOnWriteArrayList
 
 interface AbstractLogger {
@@ -41,7 +46,10 @@ interface AbstractLogger {
         val stack = Throwable().stackTrace
         for (element in stack) {
             val className = element.className
-            if (!className.contains("AbstractLogger") && !className.contains("Logger")) {
+            if (!className.contains("AbstractLogger")
+                && !className.contains("Logger")
+                && !className.contains("SLog")
+            ) {
                 return className.substringAfterLast('.')
             }
         }
@@ -52,7 +60,10 @@ interface AbstractLogger {
         val stack = Throwable().stackTrace
         for (element in stack) {
             val className = element.className
-            if (!className.contains("AbstractLogger") && !className.contains("Logger")) {
+            if (!className.contains("AbstractLogger")
+                && !className.contains("Logger")
+                && !className.contains("SLog")
+            ) {
                 return "[${element.methodName}(${element.fileName}:${element.lineNumber})]"
             }
         }
@@ -71,9 +82,38 @@ object StdLogger : AbstractLogger {
 
 }
 
-object FileLogger : AbstractLogger {
-    override fun log(level: Int, tag: String, message: String) {
+class FileLogger(context: Context) : AbstractLogger {
+    private val tsFmt = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS", java.util.Locale.US)
+    var writer = BufferedWriter(
+        FileWriter(
+            File(
+                getDir(context),
+                "${
+                    java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.US)
+                        .format(System.currentTimeMillis())
+                }.log"
+            ), false
+        )
+    )
 
+    private fun getDir(context: Context): File {
+        var dir = File(context.getExternalFilesDir(null), "log")
+        if (!dir.exists()) {
+            if (!dir.mkdirs() && !dir.exists()) {
+                throw IOException("Failed to create log dir: ${dir.absolutePath}")
+            }
+        }
+        return dir
+    }
+
+    private fun currentTime(): String {
+        return tsFmt.format(System.currentTimeMillis())
+    }
+
+    override fun log(level: Int, tag: String, message: String) {
+        writer.write("${currentTime()} [$tag]$message")
+        writer.newLine()
+        writer.flush()
     }
 }
 

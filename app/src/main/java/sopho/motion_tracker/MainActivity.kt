@@ -13,6 +13,7 @@ import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import sopho.motion_tracker.util.FileLogger
 import sopho.motion_tracker.util.SLog
 
 class MainActivity : AppCompatActivity() {
@@ -38,7 +39,6 @@ class MainActivity : AppCompatActivity() {
 
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onCreate(savedInstanceState: Bundle?) {
-        SLog.d("onCreate")
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -47,6 +47,8 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        SLog.addLogger(FileLogger(this))
+        SLog.d("onCreate")
         locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         val provider = when {
