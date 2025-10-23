@@ -13,6 +13,7 @@ import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import sopho.motion_tracker.util.SLog
 
 class MainActivity : AppCompatActivity() {
     private val TAG = MainActivity::class.java.simpleName
@@ -23,21 +24,21 @@ class MainActivity : AppCompatActivity() {
         override fun onLocationChanged(location: Location) {
             var distance = preLocation?.distanceTo(location)?:0f
             val text = "Lat:${location.latitude} Lng:${location.longitude} Accuracy:${location.accuracy} m Speed:${location.speed} m/s Provider:${location.provider} Distance:$distance m"
-            Log.d(TAG, "onLocationChanged: $text")
+            SLog.d("onLocationChanged: $text")
             preLocation = location
         }
 
         override fun onProviderEnabled(provider: String) {
-            Log.i(TAG, "onProviderEnabled provider:$provider")
+            SLog.i( "onProviderEnabled provider:$provider")
         }
         override fun onProviderDisabled(provider: String) {
-            Log.i(TAG, "onProviderDisabled provider:$provider")
+            SLog.i( "onProviderDisabled provider:$provider")
         }
     }
 
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d(TAG,"onCreate")
+        SLog.d("onCreate")
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
@@ -62,16 +63,16 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        Log.i(TAG, "provider:$provider")
+        SLog.i(TAG, "provider:$provider")
 
         for(provid in locationManager.allProviders){
-            Log.i(TAG, "allProviders: $provid")
+            SLog.i(TAG, "allProviders: $provid")
         }
 
         locationManager.requestLocationUpdates(
             provider,
             1000L,    // 每 1 秒请求一次
-            1f,       // 位移超过 1 米才触发
+            0f,       // 位移超过 1 米才触发
             locationListener,
             Looper.getMainLooper()
         )
