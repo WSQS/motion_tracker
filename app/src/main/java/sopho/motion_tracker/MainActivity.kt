@@ -1,13 +1,11 @@
 package sopho.motion_tracker
 
 import android.Manifest
-import android.content.Context
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
@@ -20,20 +18,22 @@ class MainActivity : AppCompatActivity() {
     private val TAG = MainActivity::class.java.simpleName
     private lateinit var locationManager: LocationManager
 
-    private var preLocation : Location? = null
+    private var preLocation: Location? = null
     private val locationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
-            var distance = preLocation?.distanceTo(location)?:0f
-            val text = "Lat:${location.latitude} Lng:${location.longitude} Accuracy:${location.accuracy} m Speed:${location.speed} m/s Provider:${location.provider} Distance:$distance m"
+            var distance = preLocation?.distanceTo(location) ?: 0f
+            val text =
+                "Lat:${location.latitude} Lng:${location.longitude} Accuracy:${location.accuracy} m Speed:${location.speed} m/s Provider:${location.provider} Distance:$distance m"
             SLog.d("onLocationChanged: $text")
             preLocation = location
         }
 
         override fun onProviderEnabled(provider: String) {
-            SLog.i( "onProviderEnabled provider:$provider")
+            SLog.i("onProviderEnabled provider:$provider")
         }
+
         override fun onProviderDisabled(provider: String) {
-            SLog.i( "onProviderDisabled provider:$provider")
+            SLog.i("onProviderDisabled provider:$provider")
         }
     }
 
@@ -49,15 +49,18 @@ class MainActivity : AppCompatActivity() {
         }
         SLog.addLogger(FileLogger(this))
         SLog.d("onCreate")
-        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
 
         val provider = when {
             locationManager.isProviderEnabled(LocationManager.FUSED_PROVIDER) ->
                 LocationManager.FUSED_PROVIDER
+
             locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ->
                 LocationManager.GPS_PROVIDER
+
             locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ->
                 LocationManager.NETWORK_PROVIDER
+
             else -> null
         }
 
@@ -67,7 +70,7 @@ class MainActivity : AppCompatActivity() {
 
         SLog.i(TAG, "provider:$provider")
 
-        for(provid in locationManager.allProviders){
+        for (provid in locationManager.allProviders) {
             SLog.i(TAG, "allProviders: $provid")
         }
 
@@ -79,4 +82,25 @@ class MainActivity : AppCompatActivity() {
             Looper.getMainLooper()
         )
     }
+
+    override fun onResume() {
+        SLog.i("onResume")
+        super.onResume()
+    }
+
+    override fun onStop() {
+        SLog.i("onStop")
+        super.onStop()
+    }
+
+    override fun onStart() {
+        SLog.i("onStart")
+        super.onStart()
+    }
+
+    override fun onDestroy() {
+        SLog.i("onDestroy")
+        super.onDestroy()
+    }
+
 }
