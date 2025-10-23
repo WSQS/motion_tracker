@@ -68,7 +68,7 @@ object StdLogger : AbstractLogger {
         tag: String,
         message: String
     ) {
-        Log.println(level,tag,message);
+        Log.println(level, tag, message);
     }
 
 }
@@ -77,9 +77,17 @@ object SLog : AbstractLogger {
 
     private val delegates = CopyOnWriteArrayList<AbstractLogger>()
 
-    fun addLogger(logger: AbstractLogger) { delegates += logger }
-    fun removeLogger(logger: AbstractLogger) { delegates -= logger }
-    fun clearLoggers() { delegates.clear() }
+    fun addLogger(logger: AbstractLogger) {
+        delegates += logger
+    }
+
+    fun removeLogger(logger: AbstractLogger) {
+        delegates -= logger
+    }
+
+    fun clearLoggers() {
+        delegates.clear()
+    }
 
     override fun log(level: Int, tag: String, message: String) {
         for (d in delegates) {
